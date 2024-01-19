@@ -11,6 +11,19 @@
 - [Changing Unreal Code](#changing-unreal-code)
 - [Setup](#setup)
 - [Suppressing Checks](#suppressing-checks)
+  - [Global](#global-using-clang-tidy-config-file)
+  - [Per Check](#per-check-using-clangd-config-file)
+  - [Comment](#comment-suppression-using-c-comments)
+  - [CheckOptions](#checkoptions-1)
+  - [Change Code](#change-code)
+- [VSCode Extension Guide](#extension-guide)
+  - [clangd](#clangd)
+    - Copy Check Name
+    - Quick Fix
+    - Refreshing Source File
+    - Running clang tidy on multiple files
+  - [unreal-clangd](#unreal-clangd-my-extension)
+    - Context Menu
 - [Trouble Shooting](#trouble-shooting)
   - [Config File Not Working](#config-file-not-working)
   - [Check Not Being Suppressed](#check-not-being-suppressed)
@@ -205,7 +218,7 @@ If you hover over a check, a window will pop up with the Check as a link you can
 ---
 
 ## Suppressing Checks
-We'll be using `four ways` to suppress clang-tidy checks
+We'll be using `five ways` to suppress clang-tidy checks
 
 1. ### `Global` using .clang-tidy config file
 
@@ -285,6 +298,73 @@ We'll be using `four ways` to suppress clang-tidy checks
             cppcoreguidelines-pro-type-member-init.IgnoreArrays: true
 
       ```
+
+5. ### `Change Code`
+    Of course another way to suppress Checks is to change the code.
+
+    - Must be careful since this can cause problems
+    - A lot of times you shouldn't change the code!
+    - Unreal/Game programming sometimes do things differently than the norm
+
+    #### Quick Fix
+      - Some code can be auto fixed by clang Tidy
+      - Must be careful though! Again because a lot of times you shouldn't even do it.
+      - Also Tidy might do it incorrectly. For example: using std::move instead of Unreal's way which is MoveTemp(). So if you do Quick Fix,  make sure to fix any Unreal incompatibility mistakes it's made.
+      - To access Quick Fix, hover over the error and when the [window](#clangd) pops up choose Quick Fix
+
+[Top](#unreal-5-clang-tidy-guide)
+
+---
+---
+
+## Extension Guide
+This is a guide for some VScode extensions people might be using.
+### Clangd
+#### Popup Window
+In VSCode, hover over the warning will pop up a window:
+
+![image](https://user-images.githubusercontent.com/62588629/226078423-8efdc5f7-6837-45ab-b937-5362683adf08.png)
+
+In this window you can:
+
+- Copy the Check name (it's tricky but can be done)
+- Use the `Quick Fix` ability to change the code
+
+---
+
+#### Refreshing a Source File
+Changing a Tidy config file will not update the warnings list.
+You can refresh a source file by:
+ - Typing a space in the source file
+ - Waiting half a second
+ - Deleting the space
+ - Alternatives are:
+   1. Press F1 and use the Reload Window command
+   2. Or just restart VSCode
+
+---
+
+#### Running Clang Tidy on Multiple Files
+
+- Just keep double clicking on all the files you want to check
+- All the files, opened by double clicking, will now process Intellisense and Clang Tidy in parallel
+- I've also used this extension to do the same thing(be careful with recursion though!):
+
+  https://marketplace.visualstudio.com/items?itemName=LuanEduardoCosta.vscode-open-files
+
+
+---
+
+### Unreal-Clangd (My extension)
+#### Context Menu
+Right Click on your document to open a context menu:
+![image](https://user-images.githubusercontent.com/62588629/226083374-5285f493-3aaf-4259-acce-d90c0375ed2d.png)
+
+- Allows you to paste `Comment` suppression on the line the cursor is currently on.
+- Context Menu also has an option to test Clang Tidy 
+- It's near the bottom of the Context Menu
+- Paste in the `global namespace`, in one of your source files, to test if Tidy is working
+  
 [Top](#unreal-5-clang-tidy-guide)
 
 ---
