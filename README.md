@@ -46,11 +46,13 @@
 - Here's a Check where I had an Exception when `changing the code`: [misc-use-anonymous-namespace](#check-misc-use-anonymous-namespace)
 
 - Here's another reason to be careful when changing Unreal code:
-  ```
-  From botman(reddit):
 
-  Be aware that some of the "unusual" code choices by Epic that are typically pointed out by linters or static analysis are to handle the different compilers for all the supported platforms (Xbox, Playstation, Switch, Android, IOS, Win64, etc).
+  **From botman(reddit):**
+
+  Be aware that some of the "unusual" code choices by Epic that are typically pointed out by linters or static analysis `are to handle the different compilers for all the supported platforms` (Xbox, Playstation, Switch, Android, IOS, Win64, etc).
+
   ```
+  ``` 
 
 [Top](#unreal-5-clang-tidy-guide)
 
