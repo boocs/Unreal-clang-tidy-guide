@@ -1,14 +1,14 @@
 # Unreal 5 Clang Tidy Guide
 
-`Updated:` Jan 18, 2024
+`Updated:` Jan 21, 2024
 
 ## Table of Contents
+- [Warning Changing Unreal Code](#warning-changing-unreal-code)
 - [How to Use This Guide](#how-to-use-this-guide)
 - [General Warning](#general-warning)
 - [About Clang Tidy](#about-clang-tidy)
 - [General](#general)
 - [Helpful Links](#helpful-links)
-- [Changing Unreal Code](#changing-unreal-code)
 - [Setup](#setup)
 - [Suppressing Checks](#suppressing-checks)
   - [Global](#global-using-clang-tidy-config-file)
@@ -36,6 +36,23 @@
   - IMPLEMENT_MODULE
   - check() and other check...() functions
 - [Tidy: Check Warnings](#tidy-checks)
+
+---
+---
+
+## `Warning` Changing Unreal Code
+- Be careful on changing code created by Epic.
+- You never know if there's a strange Unreal or "Game Programming" reason on why it is the way it is.
+- Here's a Check where I had an Exception when `changing the code`: [misc-use-anonymous-namespace](#check-misc-use-anonymous-namespace)
+
+- Here's another reason to be careful when changing Unreal code:
+  ```
+  From botman(reddit):
+
+  Be aware that some of the "unusual" code choices by Epic that are typically pointed out by linters or static analysis are to handle the different compilers for all the supported platforms (Xbox, Playstation, Switch, Android, IOS, Win64, etc).
+  ```
+
+[Top](#unreal-5-clang-tidy-guide)
 
 ---
 ---
@@ -111,16 +128,6 @@ https://clang.llvm.org/extra/clang-tidy/
 - [Clangd config docs](https://clangd.llvm.org/config) - More targeted suppression of Clang Tidy warngins using .clangd config
 - [Epic C++ Coding Standard (UE 5.3)](https://docs.unrealengine.com/5.3/en-US/epic-cplusplus-coding-standard-for-unreal-engine/)
 
-
-[Top](#unreal-5-clang-tidy-guide)
-
----
----
-
-## Changing Unreal Code
-- Be careful on changing code created by Epic.
-- You never know if there's a strange Unreal or "Game Programming" reason on why it is the way it is.
-- Here's a Check where I had an Exception when `changing the code`: [misc-use-anonymous-namespace](#check-misc-use-anonymous-namespace)
 
 [Top](#unreal-5-clang-tidy-guide)
 
@@ -305,6 +312,7 @@ We'll be using `five ways` to suppress clang-tidy checks
     - Must be careful since this can cause problems
     - A lot of times you shouldn't change the code!
     - Unreal/Game programming sometimes do things differently than the norm
+    - See [warning](#warning-changing-unreal-code) section!
 
     #### Quick Fix
       - Some code can be auto fixed by clang Tidy
@@ -534,6 +542,9 @@ if (AActor* Actor = Cast<AActor>(ContextObject))
 See here:
 
 https://docs.unrealengine.com/5.3/en-US/epic-cplusplus-coding-standard-for-unreal-engine/#auto
+
+Always test! See [warning](#warning-changing-unreal-code) section.
+
 #### Recommendation: Variable
 
 - `Global suppression`(.clang-tidy)
@@ -568,6 +579,8 @@ virtual void StartupModule() override
 
 #### Notes:
  Epic's projects still use virtual
+
+ Always test! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Project choice
 - `Global suppression`(.clang-tidy)
@@ -634,7 +647,9 @@ UE_LOG(LogLyra, Display, TEXT("Could not find exact match for tag [%s] but found
 	  {
 ```
 
-#### Notes: n/a
+#### Notes: 
+
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Use best judgement`
@@ -655,7 +670,8 @@ UE_LOG(LogLyra, Display, TEXT("Could not find exact match for tag [%s] but found
 ![image](/resources/readability-avoid-const-params-in-decls.png)
 
 #### Notes: 
-    Doesn't affect your code
+
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Project choice
 - `Global` suppression
@@ -712,7 +728,9 @@ if (FoundSpec && FoundSpec->IsActive())
 {
 ```
 
-#### Notes: n/a
+#### Notes:
+
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Project choice.
 - `Global(.clang-tidy) suppression`
@@ -763,6 +781,7 @@ void ULyraGamePhaseSubsystem::StartPhase(TSubclassOf<ULyraGamePhaseAbility> Phas
 - More than likely, in this Lyra instance the CheckOptions suppression is the right call
   - This is because FLyraGamePhaseDelegate is a delegate type created by the DECLARE_DELEGATE_OneParam macro
 - In your own code it might not have this context. It could be that changing the code it the right call
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 
 #### Recommendation: Variable
@@ -794,6 +813,7 @@ return false;
 
 #### Notes:
 - Some Unreal `ensure...` macros give this warning and can be suppressed
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Variable.
  - `Simplify the code` 
@@ -953,6 +973,8 @@ float BaseHeal = 0.0f;
 #### Notes: 
 Lower case 'f' for floating point literals are the default choice in Lyra and most Unreal projects.
 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
+
 #### Recommendation: Project choice. 
 - `Global` suppression in .clang-tidy
 - `Change` the code(Tidy quick fix available)
@@ -1023,7 +1045,7 @@ There was a pattern building where UPROPERTY variables would be in the initializ
   ULyraAbilitySystemComponent* GetLyraAbilitySystemComponent() const;
 ```
 #### Notes: 
-Can't think of a reason not to change the code
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` the code.
@@ -1077,6 +1099,7 @@ typedef TFunctionRef<bool(const ULyraGameplayAbility* LyraAbility, FGameplayAbil
 #### Notes:
 - `Don't` use 'using' in the global scope
 - `note:` See here for more 'using' rules https://docs.unrealengine.com/5.3/en-US/epic-cplusplus-coding-standard-for-unreal-engine/#namespaces
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 
 #### Recommendation: Project choice.
@@ -1150,7 +1173,8 @@ FLyraGameplayEffectContext()
 {
 }
 ```
-#### Notes: n/a
+#### Notes:
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Project preference
 - `Global` ignore
@@ -1177,6 +1201,8 @@ delete OutputFile;
 From Source\LyraGame\AbilitySystem\LyraGameplayEffectContext.h
 
 I believe this gets put into Unreal's garbage collection system.
+
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Depends
 Epic sees no problem using new and delete for specific noncommon stuff
@@ -1239,7 +1265,8 @@ if (ASC->HasMatchingGameplayTag(TAG_Gameplay_MovementStopped))
 	return FRotator(0,0,0);
 }
 ```
-#### Notes: n/a
+#### Notes: 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Project Choice (I like the code change TBH)
 - `Global` suppression
@@ -1336,6 +1363,8 @@ Use your own best judgement on changing your function to a const function.
 
 Doesn't seem like it would hurt anything... 
 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
+
 #### Recommendation:
 - `Change`code
 
@@ -1353,6 +1382,7 @@ Doesn't seem like it would hurt anything...
 ENamedThreads::Type GetDesiredThread() { return ENamedThreads::GameThread; }
 ```
 #### Notes: 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Use best Judgement
 - `Change` code (Didn't seem like it hurt)
@@ -1379,6 +1409,7 @@ if ((BaseEffectContext != nullptr) && BaseEffectContext->GetScriptStruct()->IsCh
 - This isn't to say you should change this
 - This could be one of those 'game programming' or Unreal situations
   - Example: It does check `IsChildOf()` in the `if` statement
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Variable
 - `Per Check` suppression. You want the warning, in other files, but don't want to use Comment Suppression.
@@ -1409,6 +1440,7 @@ int32 CartridgeID;
 ```
 
 #### Notes: 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Project choice
 - `Global` suppression
@@ -1623,12 +1655,13 @@ ULyraEquipmentInstance* ULyraEquipmentManagerComponent::EquipItem(TSubclassOf<UL
 ```
 const float NumberYOffset = ((NumberIndex / FMath::Max(1, DamageNumberArrayLength - 1)) - 0.5f) * 2.f;
 ```
-#### Notes: n/a
+#### Notes: 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Per Check` suppression to keep track of which files have this warning
 - `Comment` suppression for more precise monitoring
-- `Change` code if you need to
+- `Change` code if you need to but remember Unreal/Game Programming can do things unconventional! This is most likely ok.
 
 [Top](#unreal-5-clang-tidy-guide)
 
@@ -1645,7 +1678,7 @@ for (const auto Component : OwningActor->GetComponents())
 #### Notes:
 Code change doesn't seem like it would hurt.
 
-As always test your changes!
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` code(Tidy quick fix)
@@ -1667,7 +1700,8 @@ As always test your changes!
 const float ULyraAimSensitivityData::SensitivtyEnumToFloat(const ELyraGamepadSensitivity InSensitivity) const
 {
 ```
-#### Notes: n/a
+#### Notes:
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` code to remove first const from definition/implementation
@@ -1698,6 +1732,8 @@ private:
 #### Notes: 
 This message appeared on a class called FInteractionOptionBuilder. A Builder class, especially in games, might be created differently.
 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
+
 #### Recommendation: Variable(context)
 - `Per Check` suppress so you can keep track of which file the warning was
 - `Change` code if you think it makes sense
@@ -1724,6 +1760,7 @@ public:
 - MoveTemp() is Unreal's std::move equivalent so use that instead
 - Remember to always test.
 - Quick Fix works but will use std::move so you'll have to change it to MoveTemp()
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation:
 - `Change` code if possible and warranted
@@ -1755,6 +1792,8 @@ return AbsolutePath;
 ```
 #### Notes:
 Is Epic doing this on purpose or is it a bug?
+
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Hard to say since don't know Epic's intent
 `Change Code` and remove const?
@@ -1797,6 +1836,7 @@ UE_LOG(LogLyra, Warning, TEXT("Wrote collection of loaded assets to %s"), *Colle
   - This is the only use of GWorld in Lyra
   - If you hover over GWorld, it tells you to try not using it
   - World is sent as a lambda parameter and looks like you can replace GWorld with it
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Variable
 - `Per Check` suppression to keep track of files that have this warning
@@ -1830,6 +1870,8 @@ Show above, this happens because they both have the same "bDestroyDeactivatedPla
 
 `Note:` This is different though because of the comment signifying that a code change is coming.
 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
+
 #### Recommendation: Depends
 `Because of the comment` about code changes, we suppress.
 - `Per Check` suppression
@@ -1853,7 +1895,8 @@ namespace Lyra
 	namespace Input
 	{
 ```
-#### Notes: Seems ok to change code
+#### Notes: 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` code(Quick fix available)
@@ -1884,6 +1927,7 @@ void ULyraSettingKeyboardInput::RestoreToInitial()
 #### Notes: 
 - In this instance, it seems Tidy is correct and you can change the code
 - You'll have to determine what's right for your code
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: (Context matters)
 - `Change` code(Quick fix available)
@@ -1928,6 +1972,8 @@ if (DefaultContextInternal)
 #### Notes: 
 Seems ok to change code
 
+Always test when changing code! See [warning](#warning-changing-unreal-code) section.
+
 #### Recommendation: 
 - `Change` code(Quick fix available)
 
@@ -1968,6 +2014,7 @@ if (FGameplayAbilityTargetData_SingleTargetHit* SingleTargetHit = static_cast<FG
 - This isn't to say you should change the code.
 - This could be one of those it's 'game programming' or Unreal situations
 - This could have already been vetted by Epic and shown to be fine
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: Variable
 - `Per Check` suppress to mark files
@@ -1990,7 +2037,7 @@ const FString TargetPackageName = Params[1];
 ```
 #### Notes: 
 - Don't see any reason not to change code but there could be a good reason why it is the way it is
-- Make sure to test
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: (Context matters)
 - `Change` code but test
@@ -2014,6 +2061,7 @@ LoadedPackage = LoadPackage(NULL, *DestPackageName, LoadFlags);
 - Don't use NULL
 - This is the only use of NULL in Lyra's main project code
 - Docs of 'LoadPackage' mention the parameter is usually nullptr or ULevel->GetOuter()
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` code to nullptr
@@ -2037,6 +2085,7 @@ bool LogLoadingScreenReasonEveryFrame = 0;
       if (0)  
 - Looked like a way to comment out test code?
 - I used `Comment` suppression for that one
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` code usually
@@ -2062,6 +2111,7 @@ for (int32 VerticeIndex = 0; VerticeIndex < UE_ARRAY_COUNT(Vertices); ++VerticeI
 - Don't see a reason not to
 - As always it could be some 'game programming' or Unreal reason
 - Perhaps performance?
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 #### Recommendation: 
 - `Change` code but test
@@ -2128,6 +2178,7 @@ See no reason not to change code but needs to be thoroughly tested.
 
 #### Recommendation: 
 - `Change` code
+- Always test when changing code! See [warning](#warning-changing-unreal-code) section.
 
 What Tidy Quick fix does:
 
